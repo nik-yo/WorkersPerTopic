@@ -1,0 +1,56 @@
+{{ $app_name := .Values.Name }}
+{{ $image := .Values.Image }}
+{{ range .Values.Kafka.Topics }}
+---
+{{- $name := printf "%s-%s" $app_name .Topic | lower -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    app: {{ $name }}
+    topic: {{ .Topic }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $name }}
+      topic: {{ .Topic }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+        topic: {{ .Topic }}
+    spec:
+      containers:
+      - name: {{ $name }}
+        image: {{ $image }}
+        imagePullPolicy: Never
+        resources:
+          requests:
+            {{- if and .Config .Config.Cpu }}
+            cpu: {{ .Config.Cpu }}
+            {{- else }}
+            cpu: 250m
+            {{- end }}
+            {{- if and .Config .Config.Memory }}
+            memory: {{ .Config.Memory }}
+            {{- else}}
+            memory: 1G
+            {{- end }}
+          limits:
+            cpu: 2000m
+            memory: 4G
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        env:
+        - name: Kafka__BootstrapServers
+          value: host.minikube.internal:19094
+        {{- range $name, $value := .}}
+        {{- if ne $name "Config" }}
+        - name: Kafka__Topics__0__{{ $name }}
+          value: {{ $value | quote }} # env only accepts string
+        {{- end }}
+        {{- end }}
+{{- end -}}

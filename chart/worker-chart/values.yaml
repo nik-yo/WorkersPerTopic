@@ -1,0 +1,8 @@
+Name: worker-app
+Image: worker-app:latest
+Kafka:
+  Topics:
+    - Topic: Pets
+      Config:
+        Cpu: 1
+        Memory: 1G

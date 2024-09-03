@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-app
+  labels:
+    app: worker-app
+spec:
+  selector:
+    matchLabels:
+      app: worker-app
+  template:
+    metadata:
+      labels:
+        app: worker-app
+    spec:
+      containers:
+      - name: worker-app
+        image: worker-app:latest 
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 2G
+          limits:
+            cpu: 2000m
+            memory: 4G
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP

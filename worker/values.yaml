@@ -1,0 +1,13 @@
+Name: worker-app
+Image: worker-app:latest
+Kafka:
+  Topics:
+    - Topic: Fruits
+      ConsumerGroup: FruitsGroup
+    - Topic: Movies
+      ConsumerGroup: MoviesGroup
+    - Topic: Pets
+      ConsumerGroup: PetsGroup
+      Config:
+        Cpu: 1
+        Memory: 1G
